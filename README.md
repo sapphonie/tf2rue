@@ -11,7 +11,7 @@ SourceMod plugin fork of AnAkkk's TFTrue. Infdev
 
 # Added / Tweaked / Planned features
 
-- [indev] Significantly faster whitelist reloading when changing any whitelist cvars (fixes ("gg lag")[https://github.com/ldesgoui/tf2-comp-fixes/issues/20])
+- [indev] Significantly faster whitelist reloading when changing any whitelist cvars (fixes ["gg lag"](https://github.com/ldesgoui/tf2-comp-fixes/issues/20))
 - [todo] Only download whitelist from whitelist.tf if local copy isn't present or if the item schema has updated
 - [todo] everything else
 
