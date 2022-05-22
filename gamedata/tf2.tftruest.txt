@@ -1,0 +1,63 @@
+"Games"
+{
+    "tf"
+    {
+        "Signatures"
+        {
+            "CTFPlayer::GiveDefaultItems"
+            {
+                "library"   "server"
+                "linux"     "@_ZN9CTFPlayer16GiveDefaultItemsEv"
+            }
+            "CEconItemSystem::ReloadWhitelist"
+            {
+                "library"   "server"
+                "linux"     "@_ZN15CEconItemSystem15ReloadWhitelistEv"
+            }
+            "ItemSystem"
+            {
+                "library"   "server"
+                "linux"     "@_Z10ItemSystemv"
+            }
+            "CTFPlayer::GetLoadoutItem"
+            {
+                "library"   "server"
+                "linux"     "@_ZN9CTFPlayer14GetLoadoutItemEiib"
+            }
+        }
+        "MemPatches"
+        {
+            // Make mp_tournament_whitelist not require mp_tournament to be 1
+            "CEconItemSystem::ReloadWhitelist::nopnop"
+            {
+                "signature"     "CEconItemSystem::ReloadWhitelist"
+                "linux"
+                {
+                    "offset"    "34h"
+                    // jnz
+                    "verify"    "\x74\x53"
+                    // nop nop
+                    "patch"     "\x90\x90"
+                }
+                // "windows"
+                // {
+                // }
+            }
+            "CTFPlayer::GetLoadoutItem::nopnop"
+            {
+                "signature"     "CTFPlayer::GetLoadoutItem"
+                "linux"
+                {
+                    "offset"    "F0h"
+                    // jnz
+                    "verify"    "\x74\xC4"
+                    // nop nop
+                    "patch"     "\x90\x90"
+                }
+                // "windows"
+                // {
+                // }
+            }
+        }
+    }
+}
