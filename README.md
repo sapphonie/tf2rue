@@ -1,8 +1,16 @@
-# TFTruest
-SourceMod plugin replacement for nAkkk's TFTrue. Infdev
+# TF2rue
+SourceMod plugin replacement for AnAkkk's TFTrue.
+
+Also replaces F2's logstf/supstats/medicstats plugin.
+
+***This plugin is not yet finished and should not be used in a production environment unless you are crazy.***
 
 # Why
-TFTrue is ancient, uses a ton of boilerplate code, has sporadic crashes, contains closed source code (in violation of its supposed GPL-2 liscensing)and is poorly maintained. The aim of this project is to optimize as much as possible, while relying on dependencies maintained either directly by the SourceMod team themselves, or by well known, still active developers.
+TFTrue is ancient, uses a ton of boilerplate code, has sporadic crashes, contains closed source code (in violation of its supposed GPL-2 liscensing) and is poorly maintained. 
+
+Logstf/supstats/medicstats is similarly old, depends on the unmaintained and partially broken cURL extension, and similarly has a lot of boilerplate for things that SourceMod didn't provide at the time, but that now exists and is maintained.
+
+The aim of this project is to optimize as much as possible, while relying on dependencies maintained either directly by the SourceMod team themselves, or by well known, still active developers.
 
 # Dependencies
 
@@ -13,14 +21,17 @@ TFTrue is ancient, uses a ton of boilerplate code, has sporadic crashes, contain
 
 Don't worry, all of this is included in the release zip file. Just drag and drop to your server. Plus, this plugin keeps itself up to date with GoDTony's popular Updater plugin, if you have it installed.
 
-# Added / Tweaked / Planned features
+# Features
 
-- [done] Significantly faster whitelist reloading when changing any whitelist cvars (fixes ["gg lag"](https://github.com/ldesgoui/tf2-comp-fixes/issues/20))
-- [done] Only download whitelist from whitelist.tf if local copy isn't present or if the item schema has updated
+- [done] NEW! Significantly faster whitelist reloading when changing any whitelist cvars (fixes ["gg lag"](https://github.com/ldesgoui/tf2-comp-fixes/issues/20))
+- [done] NEW! Only download whitelist from whitelist.tf if local copy isn't present or if the item schema has updated
 - [todo] bhop
 - [indev] fov
 - [todo] stv stuff
 - [todo] logs
+- [todo] demostf support
+- [todo] rgl configs
+- [todo] redirect output with `log on` to not spam console
 - [indev] everything else
 
 # Removed features
