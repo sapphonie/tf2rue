@@ -12,12 +12,15 @@ Logstf/supstats/medicstats is similarly old, depends on the unmaintained and par
 
 The aim of this project is to optimize as much as possible, while relying on dependencies maintained either directly by the SourceMod team themselves, or by well known, still active developers.
 
+***TLDR, I am tired of TFTrue and Logstf/Supstats/Medstats etc crashing, breaking, and wasting cpu and making useless network requests.***
+
 # Dependencies
 
 - [SourceScramble](https://github.com/nosoop/SMExt-SourceScramble) by nosoop - for memory patching
 - [SteamWorks](https://github.com/KyleSanderson/SteamWorks) by KyleS - for SteamWorks functions (web requests etc)
 - DHooks2 by PeaceMaker and the SourceMod team - for detouring and hooking functions
-- [SM Json](https://github.com/clugg/sm-json) by clugg - for log parsing
+- [compiling only] [SM Json](https://github.com/clugg/sm-json) by clugg - for log parsing
+- [compiling only] [TFEconData](#) by nosoop - for parsing items
 
 Don't worry, all of this is included in the release zip file. Just drag and drop to your server. Plus, this plugin keeps itself up to date with GoDTony's popular Updater plugin, if you have it installed.
 
