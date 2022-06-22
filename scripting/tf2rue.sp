@@ -6,9 +6,10 @@
 #include <SteamWorks>
 
 
-GameData tftruest_gamedata;
+GameData tf2rue_gamedata;
 
-#include <tftruest/items.sp>
+#include <tf2rue/items.sp>
+#include <tf2rue/stv.sp>
 
 
 public void OnPluginStart()
@@ -21,8 +22,8 @@ public void OnPluginStart()
 void DoGamedata()
 {
     // main gamedata cfg
-    tftruest_gamedata = LoadGameConfigFile("tf2.tftruest");
-    if (tftruest_gamedata == null)
+    tf2rue_gamedata = LoadGameConfigFile("tf2.rue");
+    if (tf2rue_gamedata == null)
     {
         SetFailState("Couldn't load gamedata");
     }
@@ -39,7 +40,6 @@ void DoConVars()
 {
     DoItemsConVars();
 }
-
 
 bool IsStringNumeric(const char[] str, int nBase=10)
 {

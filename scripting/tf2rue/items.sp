@@ -207,7 +207,6 @@ public void SteamWorks_OnCheckWltfMtime(Handle hRequest, bool bFailure, bool bRe
 
 
         SteamWorks_GetHTTPResponseBodyData(hRequest, strResponse, bodysize);
-        //Print successful response to server.
         wltfmtime = StringToInt(strResponse);
 
         CheckMtimes();

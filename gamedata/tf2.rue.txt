@@ -25,6 +25,26 @@
                 "linux"     "@_ZN9CTFPlayer14GetLoadoutItemEiib"
             }
         }
+        "Functions"
+        {
+            "Sys_SpewFunc"
+            {
+                "signature"     "Sys_SpewFunc"
+                "return"        "void"
+                "this"          "ignore"
+                "arguments"
+                {
+                    "spewtype"
+                    {
+                        "type"    "int"
+                    }
+                    "spewval"
+                    {
+                        "type"    "charptr"
+                    }
+                }
+            }
+        }
         "MemPatches"
         {
             // Make mp_tournament_whitelist not require mp_tournament to be 1
