@@ -56,7 +56,7 @@ void DoItemsGamedata()
     {
         SetFailState("Couldn't endPrepSdkcall for CEconItemSystem::ReloadWhitelist");
     }
-    PrintToServer("-> Prepped SDKCall for CEconItemSystem::ReloadWhitelist");
+    PrintToServer(tagtag ... "-> Prepped SDKCall for CEconItemSystem::ReloadWhitelist");
 
 
 
@@ -72,7 +72,7 @@ void DoItemsGamedata()
     {
         SetFailState("Couldn't end PrepSdkcall for ItemSystem");
     }
-    PrintToServer("-> Prepped SDKCall for ItemSystem*");
+    PrintToServer(tagtag ... "-> Prepped SDKCall for ItemSystem*");
 
 
     Handle Sys_SpewFunc = DHookCreateFromConf(tf2rue_gamedata, "Sys_SpewFunc");
@@ -86,7 +86,7 @@ void DoItemsGamedata()
         SetFailState("Failed to detour Sys_SpewFunc.");
     }
 
-    PrintToServer("-> Detoured Sys_SpewFunc");
+    PrintToServer(tagtag ... "-> Detoured Sys_SpewFunc");
 
     // Debug
     // LogMessage("%x", SDKCall_GiveDefaultItems);
@@ -126,7 +126,7 @@ void DoItemsMemPatches()
     }
     else if (memp_ReloadWhitelist.Enable())
     {
-        PrintToServer("-> Patched CEconItemSystem::ReloadWhitelist::nopnop");
+        PrintToServer(tagtag ... "-> Patched CEconItemSystem::ReloadWhitelist::nopnop");
     }
 
 
@@ -140,7 +140,7 @@ void DoItemsMemPatches()
     }
     else if (memp_GetLoadoutItem.Enable())
     {
-        PrintToServer("-> Patched CTFPlayer::GetLoadoutItem::nopnop");
+        PrintToServer(tagtag ... "-> Patched CTFPlayer::GetLoadoutItem::nopnop");
     }
 }
 
@@ -198,7 +198,7 @@ public void SteamWorks_OnCheckWltfMtime(Handle hRequest, bool bFailure, bool bRe
         bool bodyexists = SteamWorks_GetHTTPResponseBodySize(hRequest, bodysize);
         if (bodyexists == false)
         {
-            LogMessage("No bodysize for wltf mtime request???");
+            PrintToServer(tagtag ... "No bodysize for wltf mtime request???");
             CloseHandle(hRequest);
             return;
         }
@@ -212,7 +212,7 @@ public void SteamWorks_OnCheckWltfMtime(Handle hRequest, bool bFailure, bool bRe
     }
     else
     {
-        LogMessage("[TFT] Failed to download whitelist. StatusCode = %i, bFailure = %i, RequestSuccessful = %i.", eStatusCode, bFailure, bRequestSuccessful);
+        PrintToServer(tagtag ... "Failed to download whitelist. StatusCode = %i, bFailure = %i, RequestSuccessful = %i.", eStatusCode, bFailure, bRequestSuccessful);
     }
 
     CloseHandle(hRequest);
@@ -222,13 +222,13 @@ void CheckMtimes()
 {
     if (wltfmtime > localmtime)
     {
-        LogMessage("wltfmtime %i > %i localmtime", wltfmtime, localmtime);
+        // LogMessage("wltfmtime %i > %i localmtime", wltfmtime, localmtime);
         DownloadWhitelist();
     }
     else
     {
-        LogMessage("Not redownloading unchanged whitelist for no reason.");
-        LogMessage("wltfmtime %i < %i localmtime", wltfmtime, localmtime);
+        PrintToServer(tagtag ... "Not redownloading unchanged whitelist for no reason.");
+        // LogMessage("wltfmtime %i < %i localmtime", wltfmtime, localmtime);
 
         SetWhitelist();
     }
@@ -236,7 +236,7 @@ void CheckMtimes()
 
 void DownloadWhitelist()
 {
-    LogMessage("GETing url %s", wlurl);
+    PrintToServer(tagtag ... "GETing url %s", wlurl);
 
     Handle request = SteamWorks_CreateHTTPRequest(k_EHTTPMethodGET, wlurl);
 
@@ -254,7 +254,7 @@ public void SteamWorks_OnDownloadWhitelist(Handle hRequest, bool bFailure, bool 
     }
     else
     {
-        LogMessage("[TFT] Failed to download whitelist. StatusCode = %i, bFailure = %i, RequestSuccessful = %i.", eStatusCode, bFailure, bRequestSuccessful);
+        PrintToServer(tagtag ... "[TFT] Failed to download whitelist. StatusCode = %i, bFailure = %i, RequestSuccessful = %i.", eStatusCode, bFailure, bRequestSuccessful);
     }
 
     CloseHandle(hRequest);
