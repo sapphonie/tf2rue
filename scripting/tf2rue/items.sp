@@ -11,7 +11,6 @@ char wlcfg[256];
 int wltfmtime;
 int localmtime;
 
-
 void DoItemsConVars()
 {
     mptw = FindConVar("mp_tournament_whitelist");
@@ -19,7 +18,7 @@ void DoItemsConVars()
 
     tft_whitelist_id = CreateConVar
     (
-        "tft_whitelist_id",
+        "tftrue_whitelist_id",
         "-1",
         "tftruest whitelist id",
         _,
