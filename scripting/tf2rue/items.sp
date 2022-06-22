@@ -20,7 +20,7 @@ void DoItemsConVars()
     (
         "tftrue_whitelist_id",
         "-1",
-        "tftruest whitelist id",
+        "tf2rue whitelist id",
         _,
         true, -1.0,
         false
@@ -32,7 +32,7 @@ void DoItemsGamedata()
 {
     // CTFPlayer::GiveDefaultItems
     StartPrepSDKCall(SDKCall_Player);
-    if (!PrepSDKCall_SetFromConf(tftruest_gamedata, SDKConf_Signature, "CTFPlayer::GiveDefaultItems"))
+    if (!PrepSDKCall_SetFromConf(tf2rue_gamedata, SDKConf_Signature, "CTFPlayer::GiveDefaultItems"))
     {
         SetFailState("Couldn't prep CTFPlayer::GiveDefaultItems SDKCall");
     }
@@ -47,7 +47,7 @@ void DoItemsGamedata()
 
     // CEconItemSystem::ReloadWhitelist
     StartPrepSDKCall(SDKCall_Raw);
-    if (!PrepSDKCall_SetFromConf(tftruest_gamedata, SDKConf_Signature, "CEconItemSystem::ReloadWhitelist"))
+    if (!PrepSDKCall_SetFromConf(tf2rue_gamedata, SDKConf_Signature, "CEconItemSystem::ReloadWhitelist"))
     {
         SetFailState("Couldn't prep CEconItemSystem::ReloadWhitelist SDKCall");
     }
@@ -62,7 +62,7 @@ void DoItemsGamedata()
 
     // ItemSystem (this ptr for CEconItemSystem::ReloadWhitelist)
     StartPrepSDKCall(SDKCall_Static);
-    if (!PrepSDKCall_SetFromConf(tftruest_gamedata, SDKConf_Signature, "ItemSystem"))
+    if (!PrepSDKCall_SetFromConf(tf2rue_gamedata, SDKConf_Signature, "ItemSystem"))
     {
         SetFailState("Couldn't prep ItemSystem SDKCall");
     }
@@ -75,7 +75,7 @@ void DoItemsGamedata()
     PrintToServer("-> Prepped SDKCall for ItemSystem*");
 
 
-    Handle Sys_SpewFunc = DHookCreateFromConf(tftruest_gamedata, "Sys_SpewFunc");
+    Handle Sys_SpewFunc = DHookCreateFromConf(tf2rue_gamedata, "Sys_SpewFunc");
     if (!Sys_SpewFunc)
     {
         SetFailState("Failed to setup detour for Sys_SpewFunc");
@@ -118,7 +118,7 @@ public MRESReturn Detour_Sys_SpewFunc(Handle hParams)
 void DoItemsMemPatches()
 {
     // For allowing mp_tournament_whitelist in mp_tournament 0
-    MemoryPatch memp_ReloadWhitelist = MemoryPatch.CreateFromConf(tftruest_gamedata, "CEconItemSystem::ReloadWhitelist::nopnop");
+    MemoryPatch memp_ReloadWhitelist = MemoryPatch.CreateFromConf(tf2rue_gamedata, "CEconItemSystem::ReloadWhitelist::nopnop");
 
     if (!memp_ReloadWhitelist.Validate())
     {
@@ -132,7 +132,7 @@ void DoItemsMemPatches()
 
 
     // For ?
-    MemoryPatch memp_GetLoadoutItem  = MemoryPatch.CreateFromConf(tftruest_gamedata, "CTFPlayer::GetLoadoutItem::nopnop");
+    MemoryPatch memp_GetLoadoutItem  = MemoryPatch.CreateFromConf(tf2rue_gamedata, "CTFPlayer::GetLoadoutItem::nopnop");
 
     if (!memp_GetLoadoutItem.Validate())
     {

@@ -9,8 +9,8 @@
 GameData tf2rue_gamedata;
 
 #include <tf2rue/items.sp>
-#include <tf2rue/stv.sp>
-
+// #include <tf2rue/stv.sp>
+// #include <tf2rue/fov.sp>
 
 public void OnPluginStart()
 {

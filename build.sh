@@ -1,3 +1,3 @@
 #!/bin/bash
-/home/steph/tfTEST/tf2/tf/addons/sourcemod/scripting/spcomp scripting/tftruest.sp -i./scripting -o ./plugins/tftruest.smx &&\
-cp ./plugins/tftruest.smx /home/steph/tfTEST/tf2/tf/addons/sourcemod/plugins/tftruest.smx
+/home/steph/tfTEST/tf2/tf/addons_1.10/sourcemod/scripting/spcomp scripting/tf2rue.sp -i./scripting -o ./plugins/tf2rue.smx
+cp ./plugins/tf2rue.smx /home/steph/tfTEST/tf2/tf/addons/sourcemod/plugins/tf2rue.smx
