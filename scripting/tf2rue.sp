@@ -9,6 +9,8 @@
 #include <tf2_stocks>
 #include <SteamWorks>
 #include <concolors>
+
+#undef REQUIRE_PLUGIN
 #include <updater>
 
 public Plugin myinfo =
@@ -16,7 +18,7 @@ public Plugin myinfo =
     name        = "tf2rue",
     author      = "https://sappho.io",
     description = "Replacement for AnAkkk's TFTrue. Currently only handles whitelists.",
-    version     = "0.0.2",
+    version     = "0.0.3",
     url         = "https://sappho.io"
 }
 
