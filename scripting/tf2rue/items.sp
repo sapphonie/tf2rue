@@ -299,11 +299,11 @@ void ReloadWhitelist()
                 TF2_RemoveWearable(client, child);
 
                 // Go back to the first child
-                child = GetEntPropEnt(client, Prop_Data, "m_hMoveChild")
+                child = GetEntPropEnt(client, Prop_Data, "m_hMoveChild");
             }
             else
             {
-                child = GetEntPropEnt(child, Prop_Data, "m_hMovePeer")
+                child = GetEntPropEnt(child, Prop_Data, "m_hMovePeer");
             }
         }
 
