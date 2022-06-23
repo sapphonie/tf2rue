@@ -3,6 +3,7 @@
 #include <dhooks>
 #include <sourcescramble>
 #include <tf2>
+#include <tf2_stocks>
 #include <SteamWorks>
 #include <concolors>
 

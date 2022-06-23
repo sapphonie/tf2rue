@@ -275,7 +275,12 @@ void ReloadWhitelist()
     for (int client = 1; client <= MaxClients; client++)
     {
         // ignore bogons
-        if (!IsClientConnected(client) || IsFakeClient(client))
+        if (!IsClientInGame(client) || IsFakeClient(client))
+        {
+            continue;
+        }
+        TFTeam clientTeam = TF2_GetClientTeam(client);
+        if (clientTeam != TFTeam_Blue && clientTeam != TFTeam_Red)
         {
             continue;
         }
