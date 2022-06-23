@@ -1,9 +1,9 @@
 # TF2rue
 SourceMod plugin replacement for AnAkkk's TFTrue.
 
-Also replaces F2's logstf/supstats/medicstats plugin.
+~~Also replaces F2's logstf/supstats/medicstats plugin.~~ It doesn't do that yet.
 
-***This plugin is not yet finished and should not be used in a production environment unless you are crazy.***
+~~***This plugin is not yet finished and should not be used in a production environment unless you are crazy.***~~ It's mostly fine
 
 # Why
 TFTrue is ancient, uses a ton of boilerplate code, has sporadic crashes, contains closed source code (in violation of its supposed GPL-2 liscensing) and is poorly maintained. 
