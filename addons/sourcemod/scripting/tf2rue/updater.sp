@@ -1,4 +1,4 @@
-#define UpdateURL "https://raw.githubusercontent.com/sapphonie/tf2rue/main/updatefile.txt"
+#define UpdateURL "https://raw.githubusercontent.com/sapphonie/tf2rue/main/addons/sourcemod/updatefile.txt"
 
 void InitUpdater()
 {

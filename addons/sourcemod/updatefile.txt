@@ -12,6 +12,6 @@
 
     "Files"
     {
-        "Plugin"    "/Path_SM/plugins/tf2rue.smx"
+        "Plugin"    "Path_SM/plugins/tf2rue.smx"
     }
 }
