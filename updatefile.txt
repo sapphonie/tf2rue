@@ -1,0 +1,17 @@
+"Updater"
+{
+    "Information"
+    {
+        "Version"
+        {
+            "Latest"    "0.0.2"
+        }
+
+        "Notes" "More info @ www.sourcemod.net. Changes in 1.0.1:"
+    }
+
+    "Files"
+    {
+        "Plugin"    "Path_SM/plugins/tf2rue.smx"
+    }
+}
