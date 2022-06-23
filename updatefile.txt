@@ -7,11 +7,11 @@
             "Latest"    "0.0.2"
         }
 
-        "Notes" "More info @ www.sourcemod.net. Changes in 1.0.1:"
+        "Notes" "Todo"
     }
 
     "Files"
     {
-        "Plugin"    "Path_SM/plugins/tf2rue.smx"
+        "Plugin"    "/Path_SM/plugins/tf2rue.smx"
     }
 }
