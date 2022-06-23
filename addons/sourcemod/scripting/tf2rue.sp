@@ -9,6 +9,7 @@
 #include <tf2_stocks>
 #include <SteamWorks>
 #include <concolors>
+#include <updater>
 
 public Plugin myinfo =
 {
@@ -23,12 +24,15 @@ public Plugin myinfo =
 
 GameData tf2rue_gamedata;
 
+#include <tf2rue/updater.sp>
 #include <tf2rue/items.sp>
+
 // #include <tf2rue/stv.sp>
 // #include <tf2rue/fov.sp>
 
 public void OnPluginStart()
 {
+    InitUpdater();
     DoGamedata();
     DoMemPatches();
     DoConVars();
