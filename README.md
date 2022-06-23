@@ -8,11 +8,9 @@ SourceMod plugin replacement for AnAkkk's TFTrue.
 # Why
 TFTrue is ancient, uses a ton of boilerplate code, has sporadic crashes, contains closed source code (in violation of its supposed GPL-2 liscensing) and is poorly maintained. 
 
-Logstf/supstats/medicstats is similarly old, depends on the unmaintained and partially broken cURL extension, and similarly has a lot of boilerplate for things that SourceMod didn't provide at the time, but that now exists and is maintained.
-
 The aim of this project is to optimize as much as possible, while relying on dependencies maintained either directly by the SourceMod team themselves, or by well known, still active developers.
 
-***TLDR, I am tired of TFTrue and Logstf/Supstats/Medstats etc crashing, breaking, and wasting cpu and making useless network requests.***
+***TLDR, I am tired of TFTrue etc crashing, breaking, and wasting cpu and making useless network requests.***
 
 # Dependencies
 
