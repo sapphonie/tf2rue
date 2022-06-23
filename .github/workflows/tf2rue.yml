@@ -32,7 +32,7 @@ jobs:
       run: |
         cd ./scripting
         pwd
-        spcomp -i"./include/" tf2rue.sp -o ../plugins/tf2rue.smx
+        spcomp -i"./" -i"./include/" tf2rue.sp -o ../plugins/tf2rue.smx
         ls -la
 
     - name: Zip package
