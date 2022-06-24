@@ -14,5 +14,6 @@
     "Files"
     {
         "Plugin"    "Path_SM/plugins/tf2rue.smx"
+        "Plugin"    "Path_SM/gamedata/tf2.rue.txt"
     }
 }
