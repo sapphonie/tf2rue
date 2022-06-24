@@ -24,31 +24,6 @@
                 "library"   "server"
                 "linux"     "@_ZN9CTFPlayer14GetLoadoutItemEiib"
             }
-            "Sys_SpewFunc"
-            {
-                "library"   "engine"
-                "linux"     "@_Z12Sys_SpewFunc10SpewType_tPKc"
-            }
-        }
-        "Functions"
-        {
-            "Sys_SpewFunc"
-            {
-                "signature"     "Sys_SpewFunc"
-                "return"        "void"
-                "this"          "ignore"
-                "arguments"
-                {
-                    "spewtype"
-                    {
-                        "type"    "int"
-                    }
-                    "spewval"
-                    {
-                        "type"    "charptr"
-                    }
-                }
-            }
         }
         "MemPatches"
         {
@@ -68,6 +43,42 @@
                 // {
                 // }
             }
+            // Ignore spam Msgs when applying whitelist
+            // " -> Removing %s"
+            // " -> Allowing %s"
+            "CEconItemSystem::ReloadWhitelist::nopMsg"
+            {
+                "signature"     "CEconItemSystem::ReloadWhitelist"
+                "linux"
+                {
+                    "offset"    "19Dh"
+                    // "call Msg"
+                    // "verify"    "\xE8\x16\xFA\x15\x01"
+                    // nop nop
+                    "patch"     "\x90\x90\x90\x90\x90"
+                }
+                // "windows"
+                // {
+                // }
+            }
+            // Ignore spam Warnings when applying whitelist
+            // " -> Could not find an item definition named %s"
+            "CEconItemSystem::ReloadWhitelist::nopWarning"
+            {
+                "signature"     "CEconItemSystem::ReloadWhitelist"
+                "linux"
+                {
+                    "offset"    "240h"
+                    // "call Warning"
+                    // "verify"    "\xE8\x83\xFC\x15\x01"
+                    // nop nop
+                    "patch"     "\x90\x90\x90\x90\x90"
+                }
+                // "windows"
+                // {
+                // }
+            }
+
             "CTFPlayer::GetLoadoutItem::nopnop"
             {
                 "signature"     "CTFPlayer::GetLoadoutItem"

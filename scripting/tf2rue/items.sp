@@ -74,64 +74,58 @@ void DoItemsGamedata()
     }
     PrintToServer(tagtag ... "-> Prepped SDKCall for ItemSystem*");
 
-
-    Handle Sys_SpewFunc = DHookCreateFromConf(tf2rue_gamedata, "Sys_SpewFunc");
-    if (!Sys_SpewFunc)
-    {
-        SetFailState("Failed to setup detour for Sys_SpewFunc");
-    }
-
-    if (!DHookEnableDetour(Sys_SpewFunc, false, Detour_Sys_SpewFunc))
-    {
-        SetFailState("Failed to detour Sys_SpewFunc.");
-    }
-
-    PrintToServer(tagtag ... "-> Detoured Sys_SpewFunc");
-
     // Debug
     // LogMessage("%x", SDKCall_GiveDefaultItems);
     // LogMessage("%x", SDKCall_ItemSystem);
     // LogMessage("%x", SDKCall_ReloadWhitelist);
 }
 
-public MRESReturn Detour_Sys_SpewFunc(Handle hParams)
-{
-    // Don't really care if it truncates here lol
-    char spew[64];
-
-    DHookGetParamString(hParams, 2, spew, sizeof(spew));
-
-    // Get rid of garbage spam
-    if
-    (
-            ( StrContains(spew, "-> Removing") != -1 )
-        ||  ( StrContains(spew, "-> Allowing") != -1 )
-        ||  ( StrContains(spew, "-> Could not find an item definition named") != -1 )
-    )
-    {
-        return MRES_Supercede;
-    }
-
-    return MRES_Ignored;
-}
-
 void DoItemsMemPatches()
 {
     // For allowing mp_tournament_whitelist in mp_tournament 0
-    MemoryPatch memp_ReloadWhitelist = MemoryPatch.CreateFromConf(tf2rue_gamedata, "CEconItemSystem::ReloadWhitelist::nopnop");
+    MemoryPatch memp_ReloadWhitelist_tournamentfix = MemoryPatch.CreateFromConf(tf2rue_gamedata, "CEconItemSystem::ReloadWhitelist::nopnop");
 
-    if (!memp_ReloadWhitelist.Validate())
+    if (!memp_ReloadWhitelist_tournamentfix.Validate())
     {
         ThrowError("Failed to verify CEconItemSystem::ReloadWhitelist::nopnop");
     }
-    else if (memp_ReloadWhitelist.Enable())
+    else if (memp_ReloadWhitelist_tournamentfix.Enable())
     {
         PrintToServer(tagtag ... "-> Patched CEconItemSystem::ReloadWhitelist::nopnop");
     }
 
 
 
+    // For getting rid of spam Msgs when applying whitelist
+    MemoryPatch memp_ReloadWhitelist_NoSpamMsgs = MemoryPatch.CreateFromConf(tf2rue_gamedata, "CEconItemSystem::ReloadWhitelist::nopMsg");
+
+    if (!memp_ReloadWhitelist_NoSpamMsgs.Validate())
+    {
+        ThrowError("Failed to verify CEconItemSystem::ReloadWhitelist::nopMsg");
+    }
+    else if (memp_ReloadWhitelist_NoSpamMsgs.Enable())
+    {
+        PrintToServer(tagtag ... "-> Patched CEconItemSystem::ReloadWhitelist::nopMsg");
+    }
+
+
+
+    // For getting rid of spam Warnings when applying whitelist
+    MemoryPatch memp_ReloadWhitelist_NoSpamWarnings = MemoryPatch.CreateFromConf(tf2rue_gamedata, "CEconItemSystem::ReloadWhitelist::nopWarning");
+
+    if (!memp_ReloadWhitelist_NoSpamWarnings.Validate())
+    {
+        ThrowError("Failed to verify CEconItemSystem::ReloadWhitelist::nopWarning");
+    }
+    else if (memp_ReloadWhitelist_NoSpamWarnings.Enable())
+    {
+        PrintToServer(tagtag ... "-> Patched CEconItemSystem::ReloadWhitelist::nopWarning");
+    }
+
+
+
     // For ?
+    // Idk what this does yet...
     MemoryPatch memp_GetLoadoutItem  = MemoryPatch.CreateFromConf(tf2rue_gamedata, "CTFPlayer::GetLoadoutItem::nopnop");
 
     if (!memp_GetLoadoutItem.Validate())
