@@ -56,7 +56,16 @@
         "MemPatches"
         {
             // Make mp_tournament_whitelist not require mp_tournament to be 1
-            // the jz/jnz/conditional jump right above FCVAR_NEVER_AS_STRING
+            /*
+            there's
+
+                call <random kv function>
+                itemwhitelist string
+                call <different random kv function>
+                jz
+
+            you're looking for that jz
+            */
             "CEconItemSystem::ReloadWhitelist::nopnop"
             {
                 "signature"     "CEconItemSystem::ReloadWhitelist"
@@ -69,11 +78,12 @@
                     "patch"     "\x90\x90"
                 }
                 // see CEconItemSystem::ReloadWhitelist above
+                // sub_10398640
                 "windows"
                 {
-                    "offset"    "5Bh"
+                    "offset"    "45h"
                     // jz
-                    "verify"    "\x74\x10"
+                    "verify"    "\x74\x6C"
                     // nop nop
                     "patch"     "\x90\x90"
                 }
@@ -98,7 +108,7 @@
                 // sub_10398640+19E  028 call    esi ; Msg
                 "windows"
                 {
-                    "offset"    "19Dh"
+                    "offset"    "19Eh"
                     // "call esi" after Msg addr has been pushed into esi
                     // "verify"    "\xFF\xD6"
                     // nop nop
@@ -118,6 +128,7 @@
                     // nop nop
                     "patch"     "\x90\x90\x90\x90\x90"
                 }
+                // sub_10398640
                 "windows"
                 {
                     "offset"    "1D1h"
@@ -174,7 +185,7 @@
                 sub_104D3220+A0   014 call    sub_10322050  // CTeamplayRoundBasedRules::IsInTournamentMode
                 sub_104D3220+A5   014 test    al, al
                 sub_104D3220+A7   014 jz      short loc_104D3301 // <- this is the jz we want to change to ignore the result of the IsInTournamentMode call
-
+                */
                 "windows"
                 {
                     "offset"    "A7h"
