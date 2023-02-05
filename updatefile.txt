@@ -4,10 +4,10 @@
     {
         "Version"
         {
-            "Latest"    "0.0.4"
+            "Latest"    "0.0.5"
         }
 
-        "Notes" "Stopped a crash with SpewFunc by nooping spam prints to console directly."
+        "Notes" "Added gamedata for Windows"
         "Notes" "-sappho"
     }
 
