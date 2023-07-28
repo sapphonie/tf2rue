@@ -18,7 +18,7 @@ public Plugin myinfo =
     name        = "tf2rue",
     author      = "https://sappho.io",
     description = "Replacement for AnAkkk's TFTrue. Currently only handles whitelists.",
-    version     = "0.0.6",
+    version     = "0.0.7",
     url         = "https://sappho.io"
 }
 
