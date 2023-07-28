@@ -139,13 +139,7 @@ void DoItemsMemPatches()
 }
 
 
-void mptw_changed(ConVar convar, const char[] oldValue, const char[] newValue)
-{
-    if (!StrEqual(oldValue, newValue))
-    {
-        ReloadWhitelist();
-    }
-}
+
 char wlvalue[32];
 
 void tft_wl_changed(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -197,8 +191,9 @@ public void SteamWorks_OnCheckWltfMtime(Handle hRequest, bool bFailure, bool bRe
         &&
         (
             eStatusCode == k_EHTTPStatusCode200OK
-            ||
-            eStatusCode == k_EHTTPStatusCode304NotModified
+            //||
+            //eStatusCode == k_EHTTPStatusCode304NotModified
+            // caching currently doesn't work with steamworks...?
         )
     )
     {
@@ -206,24 +201,26 @@ public void SteamWorks_OnCheckWltfMtime(Handle hRequest, bool bFailure, bool bRe
         bool bodyexists = SteamWorks_GetHTTPResponseBodySize(hRequest, bodysize);
         if (bodyexists == false)
         {
-            LogMessage("No bodysize for wltf mtime request???");
+            LogImportant("No bodysize for wltf mtime request??? Forcibly redownloading whitelist...");
+
             CloseHandle(hRequest);
+            CheckMtimes();
             return;
         }
-	// this is on the stack it gets auto delete'd
+        // this is on the stack it gets auto delete'd
         char[] strResponse = new char[bodysize];
 
         SteamWorks_GetHTTPResponseBodyData(hRequest, strResponse, bodysize);
         wltfmtime = StringToInt(strResponse);
-
-        CheckMtimes();
     }
     else
     {
-        LogMessage("Failed to check whitelist modified time. StatusCode = %i, bFailure = %i, RequestSuccessful = %i.", eStatusCode, bFailure, bRequestSuccessful);
+        LogImportant("Failed to check whitelist modified time. Forcibly redownloading whitelist.\nStatusCode = %i, bFailure = %i, RequestSuccessful = %i.", eStatusCode, bFailure, bRequestSuccessful);
     }
 
     CloseHandle(hRequest);
+    CheckMtimes();
+    return;
 }
 
 void CheckMtimes()
@@ -248,6 +245,8 @@ void DownloadWhitelist()
     LogMessage("GETing url %s", wlurl);
 
     Handle request = SteamWorks_CreateHTTPRequest(k_EHTTPMethodGET, wlurl);
+    //SteamWorks_SetHTTPRequestHeaderValue(request, "cache-control", "max-age=1200");
+    //SteamWorks_SetHTTPRequestHeaderValue(request, "If-Modified-Since", "Wed, 21 Oct 2024 07:28:00 GMT");
 
     SteamWorks_SetHTTPCallbacks(request, SteamWorks_OnDownloadWhitelist);
     SteamWorks_SendHTTPRequest(request);
@@ -256,30 +255,74 @@ void DownloadWhitelist()
 
 public void SteamWorks_OnDownloadWhitelist(Handle hRequest, bool bFailure, bool bRequestSuccessful, EHTTPStatusCode eStatusCode)
 {
-    if (!bFailure && bRequestSuccessful && eStatusCode == k_EHTTPStatusCode200OK)
+    if
+    (
+        !bFailure
+        && bRequestSuccessful
+        &&
+        (
+            eStatusCode == k_EHTTPStatusCode200OK
+            // ||
+            // eStatusCode == k_EHTTPStatusCode304NotModified
+        )
+    )
     {
         SteamWorks_WriteHTTPResponseBodyToFile(hRequest, wlcfg);
+    }
+    else
+    {
+        LogImportant("Failed to download whitelist. Attempting to use cached whitelist...\nStatusCode = %i, bFailure = %i, RequestSuccessful = %i.", eStatusCode, bFailure, bRequestSuccessful);
+    }
+
+    CloseHandle(hRequest);
+
+    // check that the file exists
+    if (FileExists(wlcfg))
+    {
+        LogMessage("Setting whitelist %s...", wlcfg);
         SetWhitelist();
     }
     else
     {
-        LogMessage("Failed to download whitelist. StatusCode = %i, bFailure = %i, RequestSuccessful = %i.", eStatusCode, bFailure, bRequestSuccessful);
+        LogImportant("Whitelist %s DOES NOT EXIST, CAN NOT SET WHITELIST!", wlcfg);
     }
-
-    CloseHandle(hRequest);
 }
 
 void SetWhitelist()
 {
     mptw.SetString(wlcfg);
+    LogImportant("Setting whitelist %s...", wlcfg);
+}
+
+void mptw_changed(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+    if (!StrEqual(oldValue, newValue))
+    {
+        ReloadWhitelist();
+    }
 }
 
 void ReloadWhitelist()
 {
-    // Reload the whitelist
+    static Profiler prof = null;
+    if (!prof)
+    {
+        prof = CreateProfiler();
+    }
+
+
+    StartProfiling(prof);
+    // Reload the whitelist - this is laggy (BECAUSE OF KeyValues::LoadFromFile in ReloadWhitelist, not because of my code), we need to optimize this at some point...
     Address Addr_ItemSys = SDKCall(SDKCall_ItemSystem);
     SDKCall(SDKCall_ReloadWhitelist, Addr_ItemSys);
+    StopProfiling(prof);
 
+
+    float profTime = GetProfilerTime(prof);
+    LogMessage("CEconItemSystem::ReloadWhitelist took %fms", profTime * 1000.0);
+
+
+    StartProfiling(prof);
     // Remove all client items
     for (int client = 1; client <= MaxClients; client++)
     {
@@ -322,4 +365,8 @@ void ReloadWhitelist()
         SetEntProp(client, Prop_Send, "m_bRegenerating", 0);
         // TF2_RegeneratePlayer(client);
     }
+    StopProfiling(prof);
+
+    profTime = GetProfilerTime(prof);
+    LogMessage("Regenerating all players took %fms", profTime * 1000.0);
 }

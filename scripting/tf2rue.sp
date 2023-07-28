@@ -9,6 +9,9 @@
 #include <tf2_stocks>
 #include <SteamWorks>
 #include <concolors>
+// #include <morecolors>
+#include <color_literals>
+#include <profiler>
 
 #undef REQUIRE_PLUGIN
 #include <updater>
@@ -22,7 +25,8 @@ public Plugin myinfo =
     url         = "https://sappho.io"
 }
 
-// #define tagtag ansi_reset ... "[" ... ansi_bright_red ... "tf" ... ansi_bright_green ... "2" ... ansi_bright_red ... "rue" ... ansi_reset ... "] "
+#define chatTag \
+COLOR_SLATEGREY ... "[" ... COLOR_FULLRED ... "tf" ... COLOR_LIGHTGREEN ... "2" ... COLOR_FULLRED ... "rue" ... COLOR_SLATEGREY ... "]" ... COLOR_WHITE ... " "
 
 GameData tf2rue_gamedata;
 
@@ -46,7 +50,7 @@ void DoGamedata()
     tf2rue_gamedata = LoadGameConfigFile("tf2.rue");
     if (tf2rue_gamedata == null)
     {
-        LogMessage("Couldn't load gamedata!");
+        LogImportant("Couldn't load gamedata!");
         SetFailState("[tf2rue] Couldn't load gamedata");
     }
 
@@ -69,3 +73,18 @@ bool IsStringNumeric(const char[] str, int nBase=10)
     return StringToIntEx(str, result, nBase) == strlen(str);
 }
 
+// log to server and print to chat
+void LogImportant(const char[] format, any ...)
+{
+    char buffer[254];
+    VFormat(buffer, sizeof(buffer), format, 2);
+
+    // clear color tags from LogMsg
+    char stripped_buffer[254];
+    StripColorChars(buffer, stripped_buffer, sizeof(stripped_buffer), true);
+    LogMessage("%s", stripped_buffer);
+
+    // allow colors in normal ptc
+    Format(buffer, sizeof(buffer), "%s %s", chatTag, buffer);
+    PrintColoredChatAll("%s", buffer);
+}
