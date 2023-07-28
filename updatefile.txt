@@ -4,11 +4,12 @@
     {
         "Version"
         {
-            "Latest"    "0.0.7"
+            "Latest"    "0.0.8"
         }
 
         "Notes" "Updated gamedata for 7/25 update, thanks nosoop"
         "Notes" "Implemeted better handling for whitelist tf caching named whitelists, using new wltf endpoint - thanks Wiet"
+        "Notes" "Misc logic improvements and color chat/logging to server files"
         "Notes" "-sappho"
     }
 
