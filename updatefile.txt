@@ -4,7 +4,7 @@
     {
         "Version"
         {
-            "Latest"    "0.0.8"
+            "Latest"    "0.0.9"
         }
 
         "Notes" "Updated gamedata for 7/25 update, thanks nosoop"
