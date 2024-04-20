@@ -32,15 +32,17 @@ void DoItemsGamedata()
 {
     // CTFPlayer::GiveDefaultItems
     StartPrepSDKCall(SDKCall_Player);
-    if (!PrepSDKCall_SetFromConf(tf2rue_gamedata, SDKConf_Signature, "CTFPlayer::GiveDefaultItems"))
+    if (PrepSDKCall_SetFromConf(tf2rue_gamedata, SDKConf_Signature, "CTFPlayer::GiveDefaultItems"))
     {
-        SetFailState("Couldn't prep CTFPlayer::GiveDefaultItems SDKCall");
+        // PrepSDKCall_AddParameter(SDKType_CBasePlayer, SDKPass_ByValue);
+        SDKCall_GiveDefaultItems = EndPrepSDKCall();
+        LogMessage("-> Prepped SDKCall for CTFPlayer::GiveDefaultItems");
     }
-    // PrepSDKCall_AddParameter(SDKType_CBasePlayer, SDKPass_ByValue);
-    SDKCall_GiveDefaultItems = EndPrepSDKCall();
     if (SDKCall_GiveDefaultItems == null)
     {
-        SetFailState("Couldn't endPrepSdkcall for CTFPlayer::GiveDefaultItems");
+        // as of 8826692 or so, GiveDefaultItems is now inlined on Windows
+        // we'll just disable the call for now
+        LogMessage("Couldn't prep CTFPlayer::GiveDefaultItems SDKCall");
     }
 
 
@@ -321,6 +323,11 @@ void ReloadWhitelist()
     float profTime = GetProfilerTime(prof);
     LogMessage("CEconItemSystem::ReloadWhitelist took %fms", profTime * 1000.0);
 
+    if (!SDKCall_GiveDefaultItems)
+    {
+        LogMessage("Skipped regenerating players because we can't grant default items");
+        return;
+    }
 
     StartProfiling(prof);
     // Remove all client items
