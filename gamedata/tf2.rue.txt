@@ -9,8 +9,7 @@
             {
                 "library"   "server"
                 "linux"     "@_ZN9CTFPlayer16GiveDefaultItemsEv"
-                // sub_104D4220:
-                "windows"   "\x56\x57\x8B\xF9\xFF\xB7\x2A\x22\x00\x00\xE8\x2A\x2A\x2A\x2A\x83\xC4\x04"
+                // this was inlined on Windows. rip
             }
             // "Item Whitelist file '%s' could not be found. All items" etc
             "CEconItemSystem::ReloadWhitelist"
@@ -18,7 +17,7 @@
                 "library"   "server"
                 "linux"     "@_ZN15CEconItemSystem15ReloadWhitelistEv"
                 // sub_10398640
-                "windows"   "\x55\x8B\xEC\x83\xEC\x0C\x53\x56\x57\x8B\xD9\xC6\x45\xFF\x01"
+                "windows"   "\x55\x8B\xEC\x83\xEC\x08\x53\x56\x57\x8B\xD9"
             }
             // "Available item definitions for whitelisting:"
             /*
@@ -49,7 +48,7 @@
                 "library"   "server"
                 "linux"     "@_ZN9CTFPlayer14GetLoadoutItemEiib"
                 // sub_104D3220
-                "windows"   "\x55\x8B\xEC\x51\x53\x56\x8B\xF1\x8B\x0D\x2A\x2A\x2A\x2A\x57\x89\x75\xFC"
+                "windows"   "\x55\x8B\xEC\x83\xEC\x10\x53\x56\x8B\xF1\x8B\x0D\x2A\x2A\x2A\x2A"
             }
         }
         // some verify blocks are commented out because i don't think there's stable unchanging bytes to verify against
@@ -71,9 +70,9 @@
                 "signature"     "CEconItemSystem::ReloadWhitelist"
                 "linux"
                 {
-                    "offset"    "34h"
-                    // jnz
-                    "verify"    "\x74\x53"
+                    "offset"    "2Fh"
+                    // jz
+                    "verify"    "\x74\x52"
                     // nop nop
                     "patch"     "\x90\x90"
                 }
@@ -81,9 +80,9 @@
                 // sub_10398640
                 "windows"
                 {
-                    "offset"    "45h"
+                    "offset"    "3Fh"
                     // jz
-                    "verify"    "\x74\x6C"
+                    "verify"    "\x74\x73"
                     // nop nop
                     "patch"     "\x90\x90"
                 }
@@ -96,9 +95,9 @@
                 "signature"     "CEconItemSystem::ReloadWhitelist"
                 "linux"
                 {
-                    "offset"    "19Dh"
-                    // "call Msg"
-                    // "verify"    "\xE8\x2A\x2A\x2A"
+                    "offset"    "19Bh"
+                    // call Msg
+                    // "verify"    "\xE8\x2A\x2A\x2A\x2A"
                     // nop nop
                     "patch"     "\x90\x90\x90\x90\x90"
                 }
@@ -108,11 +107,11 @@
                 // sub_10398640+19E  028 call    esi ; Msg
                 "windows"
                 {
-                    "offset"    "19Eh"
-                    // "call esi" after Msg addr has been pushed into esi
-                    // "verify"    "\xFF\xD6"
+                    "offset"    "19Bh"
+                    // call Msg
+                    "verify"    "\xFF\x15"
                     // nop nop
-                    "patch"     "\x90\x90"
+                    "patch"     "\x90\x90\x90\x90\x90\x90"
                 }
             }
             // Ignore spam Warnings when applying whitelist
@@ -131,10 +130,11 @@
                 // sub_10398640
                 "windows"
                 {
-                    "offset"    "1D1h"
+                    "offset"    "1ABh"
+                    "verify"    "\xFF\x15\x2A\x2A\x2A\x2A"
                     // call Warning
                     // "verify"     "\xFF\x15\xBC\x62\x72\x10"
-                    "patch"     "\x90\x90\x90\x90\x90\x90"
+                    "patch"     "\x90\x90\x90\x90\x90"
                 }
             }
             // always apply whitelist regardless of tournament mode
@@ -143,9 +143,9 @@
                 "signature"     "CTFPlayer::GetLoadoutItem"
                 "linux"
                 {
-                    "offset"    "F0h"
+                    "offset"    "128h"
                     // jz
-                    "verify"    "\x74\xC4"
+                    "verify"    "\x74\x8A"
                     // nop nop
                     "patch"     "\x90\x90"
                 }
@@ -188,7 +188,7 @@
                 */
                 "windows"
                 {
-                    "offset"    "A7h"
+                    "offset"    "18Fh"
                     // jz
                     "verify"    "\x74\x38"
                     // nop nop
