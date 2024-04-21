@@ -4,12 +4,13 @@
     {
         "Version"
         {
-            "Latest"    "0.0.10"
+            "Latest"    "0.0.11"
         }
 
-        "Notes" "Update to fix breakage after x64 update.
-        "Notes" "Full functionality restoration for linux users, partial functionality for windows users. Big thanks to nosoop"
-        "Notes" "-sappho"
+        "Notes"     "Update to fix breakage after x64 update.
+        "Notes"     "Full functionality restoration for linux users, partial functionality for windows users. Big thanks to nosoop"
+        "Notes"     "Version bumped to 0.0.11 to fix bad gamedata!"
+        "Notes"     "-sappho"
     }
 
     "Files"
