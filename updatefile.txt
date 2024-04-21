@@ -4,12 +4,11 @@
     {
         "Version"
         {
-            "Latest"    "0.0.9"
+            "Latest"    "0.0.10"
         }
 
-        "Notes" "Updated gamedata for 7/25 update, thanks nosoop"
-        "Notes" "Implemeted better handling for whitelist tf caching named whitelists, using new wltf endpoint - thanks Wiet"
-        "Notes" "Misc logic improvements and color chat/logging to server files"
+        "Notes" "Update to fix breakage after x64 update.
+        "Notes" "Full functionality restoration for linux users, partial functionality for windows users. Big thanks to nosoop"
         "Notes" "-sappho"
     }
 
