@@ -121,9 +121,9 @@
                 "signature"     "CEconItemSystem::ReloadWhitelist"
                 "linux"
                 {
-                    "offset"    "240h"
-                    // call Warning
-                    // "verify"    "\xE8\x83\xFC\x15\x01"
+                    "offset"    "227h"
+                    // "call Warning"
+                    "verify"    "\xE8\x2A\x2A\x2A\x2A"
                     // nop nop
                     "patch"     "\x90\x90\x90\x90\x90"
                 }
