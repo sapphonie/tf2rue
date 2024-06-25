@@ -162,13 +162,13 @@ void CheckWltfMtime()
     /* string vs numeric ids */
     if (IsStringNumeric(wlvalue))
     {
-        Format(wlurl, sizeof(wlurl), "https://whitelist.tf/custom_whitelist_%s.txt", wlvalue);
+        Format(wlurl, sizeof(wlurl), "https://whitelist.tf/download/custom_whitelist_%s.txt", wlvalue);
         Format(wlcfg, sizeof(wlcfg), "cfg/custom_whitelist_%s.txt",                  wlvalue);
         Format(lastUpdateTimeURL, sizeof(lastUpdateTimeURL), "https://whitelist.tf/last_update_time");
     }
     else
     {
-        Format(wlurl, sizeof(wlurl), "https://whitelist.tf/%s.txt",  wlvalue);
+        Format(wlurl, sizeof(wlurl), "https://whitelist.tf/download/%s.txt",  wlvalue);
         Format(wlcfg, sizeof(wlcfg), "cfg/%s.txt",                   wlvalue);
         Format(lastUpdateTimeURL, sizeof(lastUpdateTimeURL), "https://whitelist.tf/last_update_time?whitelist=%s", wlvalue);
     }
