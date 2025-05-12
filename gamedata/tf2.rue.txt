@@ -17,7 +17,7 @@
                 "library"   "server"
                 "linux"     "@_ZN15CEconItemSystem15ReloadWhitelistEv"
                 // sub_10398640
-                "windows"   "\x55\x8B\xEC\x83\xEC\x08\x53\x56\x57\x8B\xD9"
+                "windows"   "\x55\x8B\xEC\x83\xEC\x0C\x53\x56\x57\x8B\xD9\xC6\x45\xFF\x01"
             }
             // "Available item definitions for whitelisting:"
             /*
@@ -70,9 +70,9 @@
                 "signature"     "CEconItemSystem::ReloadWhitelist"
                 "linux"
                 {
-                    "offset"    "2Fh"
+                    "offset"    "30h"
                     // jz
-                    "verify"    "\x74\x52"
+                    "verify"    "\x74\x5A"
                     // nop nop
                     "patch"     "\x90\x90"
                 }
@@ -80,7 +80,7 @@
                 // sub_10398640
                 "windows"
                 {
-                    "offset"    "3Fh"
+                    "offset"    "45h"
                     // jz
                     "verify"    "\x74\x73"
                     // nop nop
@@ -95,7 +95,7 @@
                 "signature"     "CEconItemSystem::ReloadWhitelist"
                 "linux"
                 {
-                    "offset"    "19Bh"
+                    "offset"    "18Fh"
                     // call Msg
                     // "verify"    "\xE8\x2A\x2A\x2A\x2A"
                     // nop nop
@@ -107,7 +107,7 @@
                 // sub_10398640+19E  028 call    esi ; Msg
                 "windows"
                 {
-                    "offset"    "19Bh"
+                    "offset"    "1A7h"
                     // call Msg
                     "verify"    "\xFF\x15"
                     // nop nop
@@ -121,7 +121,7 @@
                 "signature"     "CEconItemSystem::ReloadWhitelist"
                 "linux"
                 {
-                    "offset"    "227h"
+                    "offset"    "1D9h"
                     // "call Warning"
                     "verify"    "\xE8\x2A\x2A\x2A\x2A"
                     // nop nop
@@ -130,7 +130,7 @@
                 // sub_10398640
                 "windows"
                 {
-                    "offset"    "1ABh"
+                    "offset"    "1B7h"
                     "verify"    "\xFF\x15\x2A\x2A\x2A\x2A"
                     // call Warning
                     // "verify"     "\xFF\x15\xBC\x62\x72\x10"
