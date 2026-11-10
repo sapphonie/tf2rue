@@ -5,12 +5,6 @@ Handle SDKCall_ReloadWhitelist;
 ConVar mptw;
 ConVar tft_whitelist_id;
 
-char wlurl[256];
-char wlcfg[256];
-
-int wltfmtime;
-int localmtime;
-
 void DoItemsConVars()
 {
     mptw = FindConVar("mp_tournament_whitelist");
@@ -142,10 +136,14 @@ void DoItemsMemPatches()
 
 
 
-char wlvalue[32];
+// Bumped on every tftrue_whitelist_id change. Each request chain carries the gen it was started with
+// (plus its own url/cfg) in a DataPack, so a response that lands after the cvar changed can't set the wrong whitelist.
+int wlgen;
 
 void tft_wl_changed(ConVar convar, const char[] oldValue, const char[] newValue)
 {
+    wlgen++;
+
     if (tft_whitelist_id.IntValue < 0)
     {
         LogMessage("Whitelist id %i < 0, unsetting whitelist!", tft_whitelist_id.IntValue);
@@ -154,18 +152,18 @@ void tft_wl_changed(ConVar convar, const char[] oldValue, const char[] newValue)
         // calls ReloadWhitelist() if needed
     }
 
-    strcopy(wlvalue, sizeof(wlvalue), newValue);
-
     if (!StrEqual(oldValue, newValue))
     {
         // Check whitelist.tf's last modified time first before downloading a potentially large whitelist file
         // We only download a new whitelist if the whitelist.tf timestamp is newer than our local version
-        CheckWltfMtime();
+        CheckWltfMtime(newValue);
     }
 }
-void CheckWltfMtime()
+void CheckWltfMtime(const char[] wlvalue)
 {
     char lastUpdateTimeURL[256];
+    char wlurl[256];
+    char wlcfg[256];
 
     /* string vs numeric ids */
     if (IsStringNumeric(wlvalue))
@@ -180,20 +178,55 @@ void CheckWltfMtime()
         Format(wlcfg, sizeof(wlcfg), "cfg/%s.txt",                   wlvalue);
         Format(lastUpdateTimeURL, sizeof(lastUpdateTimeURL), "https://whitelist.tf/last_update_time?whitelist=%s", wlvalue);
     }
-    localmtime = -1;
-    localmtime = GetFileTime(wlcfg, FileTime_LastChange);
-    LogMessage("CheckWltfMtime - localmtime %i", localmtime);
+    int localmtime = GetFileTime(wlcfg, FileTime_LastChange);
+    LogMessage("CheckWltfMtime - gen %i, url %s, cfg %s, localmtime %i", wlgen, wlurl, wlcfg, localmtime);
     LogMessage("CheckWltfMtime - GETing url %s", lastUpdateTimeURL);
 
-    Handle hRequest = SteamWorks_CreateHTTPRequest(k_EHTTPMethodGET, lastUpdateTimeURL);
+    // read back in this order by CheckMtimes / SteamWorks_OnDownloadWhitelist
+    DataPack pack = new DataPack();
+    pack.WriteCell(wlgen);
+    pack.WriteCell(localmtime);
+    pack.WriteString(wlurl);
+    pack.WriteString(wlcfg);
 
-    SteamWorks_SetHTTPCallbacks(hRequest, SteamWorks_OnCheckWltfMtime);
-    SteamWorks_SendHTTPRequest(hRequest);
+    SendWlRequest(lastUpdateTimeURL, SteamWorks_OnCheckWltfMtime, pack);
 }
 
-public void SteamWorks_OnCheckWltfMtime(Handle hRequest, bool bFailure, bool bRequestSuccessful, EHTTPStatusCode eStatusCode)
+// Takes ownership of pack: it's freed here if the request can't be sent, otherwise by the callback
+void SendWlRequest(const char[] url, SteamWorksHTTPRequestCompleted callback, DataPack pack)
 {
-    wltfmtime = -1;
+    Handle hRequest = SteamWorks_CreateHTTPRequest(k_EHTTPMethodGET, url);
+    if
+    (
+        hRequest == null
+        || !SteamWorks_SetHTTPRequestContextValue(hRequest, pack)
+        || !SteamWorks_SetHTTPCallbacks(hRequest, callback)
+        || !SteamWorks_SendHTTPRequest(hRequest)
+    )
+    {
+        LogImportant("Failed to send request to %s", url);
+        if (hRequest != null)
+        {
+            CloseHandle(hRequest);
+        }
+        CloseHandle(pack);
+    }
+}
+
+public void SteamWorks_OnCheckWltfMtime(Handle hRequest, bool bFailure, bool bRequestSuccessful, EHTTPStatusCode eStatusCode, any data1)
+{
+    DataPack pack = view_as<DataPack>(data1);
+    pack.Reset();
+    int gen = pack.ReadCell();
+    if (gen != wlgen)
+    {
+        LogMessage("SteamWorks_OnCheckWltfMtime - dropping stale response, gen %i != current gen %i", gen, wlgen);
+        CloseHandle(hRequest);
+        CloseHandle(pack);
+        return;
+    }
+
+    int wltfmtime = -1;
     if
     (
         !bFailure
@@ -214,7 +247,7 @@ public void SteamWorks_OnCheckWltfMtime(Handle hRequest, bool bFailure, bool bRe
             LogImportant("No bodysize for wltf mtime request??? Forcibly redownloading whitelist...");
 
             CloseHandle(hRequest);
-            CheckMtimes();
+            CheckMtimes(pack, wltfmtime);
             return;
         }
         // this is on the stack it gets auto delete'd
@@ -229,42 +262,51 @@ public void SteamWorks_OnCheckWltfMtime(Handle hRequest, bool bFailure, bool bRe
     }
 
     CloseHandle(hRequest);
-    CheckMtimes();
+    CheckMtimes(pack, wltfmtime);
     return;
 }
 
-void CheckMtimes()
+// pack is positioned right after gen
+void CheckMtimes(DataPack pack, int wltfmtime)
 {
+    char wlurl[256];
+    char wlcfg[256];
+    int localmtime = pack.ReadCell();
+    pack.ReadString(wlurl, sizeof(wlurl));
+    pack.ReadString(wlcfg, sizeof(wlcfg));
+
     // TODO; need to make sure localmtime is in UTC...
     if (wltfmtime > localmtime || wltfmtime <= 0 || localmtime <= 0)
     {
         LogMessage("CheckMtimes - wltfmtime %i > %i localmtime || wltfmtime %i <= 0 || localtime %i <= 0", wltfmtime, localmtime, wltfmtime, localmtime);
-        DownloadWhitelist();
+        LogMessage("GETing url %s", wlurl);
+        SendWlRequest(wlurl, SteamWorks_OnDownloadWhitelist, pack);
     }
     else
     {
         LogMessage("Not redownloading unchanged whitelist for no reason.");
         LogMessage("wltfmtime %i < %i localmtime", wltfmtime, localmtime);
 
-        SetWhitelist();
+        CloseHandle(pack);
+        SetWhitelist(wlcfg);
     }
 }
 
-void DownloadWhitelist()
+public void SteamWorks_OnDownloadWhitelist(Handle hRequest, bool bFailure, bool bRequestSuccessful, EHTTPStatusCode eStatusCode, any data1)
 {
-    LogMessage("GETing url %s", wlurl);
+    char wlurl[256];
+    char wlcfg[256];
+    DataPack pack = view_as<DataPack>(data1);
+    pack.Reset();
+    int gen = pack.ReadCell();
+    pack.ReadCell(); // localmtime
+    pack.ReadString(wlurl, sizeof(wlurl));
+    pack.ReadString(wlcfg, sizeof(wlcfg));
+    CloseHandle(pack);
 
-    Handle request = SteamWorks_CreateHTTPRequest(k_EHTTPMethodGET, wlurl);
-    //SteamWorks_SetHTTPRequestHeaderValue(request, "cache-control", "max-age=1200");
-    //SteamWorks_SetHTTPRequestHeaderValue(request, "If-Modified-Since", "Wed, 21 Oct 2024 07:28:00 GMT");
+    LogMessage("SteamWorks_OnDownloadWhitelist - gen %i (current %i), url %s, cfg %s", gen, wlgen, wlurl, wlcfg);
 
-    SteamWorks_SetHTTPCallbacks(request, SteamWorks_OnDownloadWhitelist);
-    SteamWorks_SendHTTPRequest(request);
-}
-
-
-public void SteamWorks_OnDownloadWhitelist(Handle hRequest, bool bFailure, bool bRequestSuccessful, EHTTPStatusCode eStatusCode)
-{
+    int bodysize;
     if
     (
         !bFailure
@@ -275,22 +317,42 @@ public void SteamWorks_OnDownloadWhitelist(Handle hRequest, bool bFailure, bool 
             // ||
             // eStatusCode == k_EHTTPStatusCode304NotModified
         )
+        && SteamWorks_GetHTTPResponseBodySize(hRequest, bodysize)
+        && bodysize > 0
     )
     {
-        SteamWorks_WriteHTTPResponseBodyToFile(hRequest, wlcfg);
+        // Download to a temp file and only then replace the cached whitelist, so a failed write can't clobber it.
+        // Even a stale response is written: it's the right data for its own file, it just doesn't get set below.
+        char wltmp[260];
+        Format(wltmp, sizeof(wltmp), "%s.tmp", wlcfg);
+        if (!SteamWorks_WriteHTTPResponseBodyToFile(hRequest, wltmp))
+        {
+            LogImportant("Failed to write whitelist to %s. Attempting to use cached whitelist...", wltmp);
+        }
+        // rename() doesn't overwrite an existing file on windows
+        else if (!RenameFile(wlcfg, wltmp) && !(DeleteFile(wlcfg) && RenameFile(wlcfg, wltmp)))
+        {
+            LogImportant("Failed to move %s to %s. Attempting to use cached whitelist...", wltmp, wlcfg);
+        }
     }
     else
     {
-        LogImportant("Failed to download whitelist. Attempting to use cached whitelist...\nStatusCode = %i, bFailure = %i, RequestSuccessful = %i.", eStatusCode, bFailure, bRequestSuccessful);
+        LogImportant("Failed to download whitelist. Attempting to use cached whitelist...\nStatusCode = %i, bFailure = %i, RequestSuccessful = %i, bodysize = %i.", eStatusCode, bFailure, bRequestSuccessful, bodysize);
     }
 
     CloseHandle(hRequest);
+
+    if (gen != wlgen)
+    {
+        LogMessage("SteamWorks_OnDownloadWhitelist - stale response, gen %i != current gen %i, not setting whitelist %s", gen, wlgen, wlcfg);
+        return;
+    }
 
     // check that the file exists
     if (FileExists(wlcfg))
     {
         LogMessage("Setting whitelist %s...", wlcfg);
-        SetWhitelist();
+        SetWhitelist(wlcfg);
     }
     else
     {
@@ -298,7 +360,7 @@ public void SteamWorks_OnDownloadWhitelist(Handle hRequest, bool bFailure, bool 
     }
 }
 
-void SetWhitelist()
+void SetWhitelist(const char[] wlcfg)
 {
     mptw.SetString(wlcfg);
     LogImportant("Setting whitelist %s...", wlcfg);
