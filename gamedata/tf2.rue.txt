@@ -70,9 +70,9 @@
                 "signature"     "CEconItemSystem::ReloadWhitelist"
                 "linux"
                 {
-                    "offset"    "30h"
+                    "offset"    "48h"
                     // jz
-                    "verify"    "\x74\x5A"
+                    "verify"    "\x74\x64"
                     // nop nop
                     "patch"     "\x90\x90"
                 }
@@ -95,7 +95,7 @@
                 "signature"     "CEconItemSystem::ReloadWhitelist"
                 "linux"
                 {
-                    "offset"    "18Fh"
+                    "offset"    "216h"
                     // call Msg
                     // "verify"    "\xE8\x2A\x2A\x2A\x2A"
                     // nop nop
@@ -121,7 +121,7 @@
                 "signature"     "CEconItemSystem::ReloadWhitelist"
                 "linux"
                 {
-                    "offset"    "1D9h"
+                    "offset"    "2DFh"
                     // "call Warning"
                     "verify"    "\xE8\x2A\x2A\x2A\x2A"
                     // nop nop
@@ -143,11 +143,11 @@
                 "signature"     "CTFPlayer::GetLoadoutItem"
                 "linux"
                 {
-                    "offset"    "128h"
-                    // jz
-                    "verify"    "\x74\x8A"
-                    // nop nop
-                    "patch"     "\x90\x90"
+                    "offset"    "149h"
+                    // jz (near)
+                    "verify"    "\x0F\x84"
+                    // nop x6
+                    "patch"     "\x90\x90\x90\x90\x90\x90"
                 }
                 // see CTFPlayer::GetLoadoutItem above
                 // this was very annoying
