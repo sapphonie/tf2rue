@@ -143,9 +143,15 @@ void DoItemsMemPatches()
 
 
 char wlvalue[32];
+// Counts changes of tftrue_whitelist_id. Each HTTP request stores the count from when it was sent.
+// If the count is different when the response arrives, the id changed in between,
+// so the response is for an old whitelist and we ignore it.
+int wlChangeCount;
 
 void tft_wl_changed(ConVar convar, const char[] oldValue, const char[] newValue)
 {
+    wlChangeCount++;
+
     if (tft_whitelist_id.IntValue < 0)
     {
         LogMessage("Whitelist id %i < 0, unsetting whitelist!", tft_whitelist_id.IntValue);
@@ -187,12 +193,20 @@ void CheckWltfMtime()
 
     Handle hRequest = SteamWorks_CreateHTTPRequest(k_EHTTPMethodGET, lastUpdateTimeURL);
 
+    SteamWorks_SetHTTPRequestContextValue(hRequest, wlChangeCount);
     SteamWorks_SetHTTPCallbacks(hRequest, SteamWorks_OnCheckWltfMtime);
     SteamWorks_SendHTTPRequest(hRequest);
 }
 
-public void SteamWorks_OnCheckWltfMtime(Handle hRequest, bool bFailure, bool bRequestSuccessful, EHTTPStatusCode eStatusCode)
+public void SteamWorks_OnCheckWltfMtime(Handle hRequest, bool bFailure, bool bRequestSuccessful, EHTTPStatusCode eStatusCode, any requestChangeCount)
 {
+    if (requestChangeCount != wlChangeCount)
+    {
+        LogMessage("Dropping stale wltf mtime response, sent at change %i, now at change %i", requestChangeCount, wlChangeCount);
+        CloseHandle(hRequest);
+        return;
+    }
+
     wltfmtime = -1;
     if
     (
@@ -258,13 +272,21 @@ void DownloadWhitelist()
     //SteamWorks_SetHTTPRequestHeaderValue(request, "cache-control", "max-age=1200");
     //SteamWorks_SetHTTPRequestHeaderValue(request, "If-Modified-Since", "Wed, 21 Oct 2024 07:28:00 GMT");
 
+    SteamWorks_SetHTTPRequestContextValue(request, wlChangeCount);
     SteamWorks_SetHTTPCallbacks(request, SteamWorks_OnDownloadWhitelist);
     SteamWorks_SendHTTPRequest(request);
 }
 
 
-public void SteamWorks_OnDownloadWhitelist(Handle hRequest, bool bFailure, bool bRequestSuccessful, EHTTPStatusCode eStatusCode)
+public void SteamWorks_OnDownloadWhitelist(Handle hRequest, bool bFailure, bool bRequestSuccessful, EHTTPStatusCode eStatusCode, any requestChangeCount)
 {
+    if (requestChangeCount != wlChangeCount)
+    {
+        LogMessage("Dropping stale whitelist download, sent at change %i, now at change %i", requestChangeCount, wlChangeCount);
+        CloseHandle(hRequest);
+        return;
+    }
+
     if
     (
         !bFailure
